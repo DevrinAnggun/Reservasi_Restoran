@@ -1,49 +1,53 @@
-from src.reservation import lihat_reservasi
-from src.storage import load_data, save_data
+import json
+import os
 
-def tambah_order():
-    orders = load_data("orders.json")
-    print("\n=== Tambah Order ===")
+ORDER_FILE = "data/orders.json"
 
-    lihat_reservasi()  # Memastikan user melihat daftar reservasi sebelum order
+class OrderManager:
+    def __init__(self):
+        self.orders = self.load_orders()
 
-    nama = input("Masukkan nama pelanggan: ")
-    makanan = input("Masukkan makanan yang dipesan: ")
-    minuman = input("Masukkan minuman yang dipesan: ")
+    def load_orders(self):
+        if os.path.exists(ORDER_FILE):
+            with open(ORDER_FILE, "r") as file:
+                try:
+                    return json.load(file)
+                except json.JSONDecodeError:
+                    return []
+        return []
 
-    orders.append({
-        "nama": nama,
-        "makanan": makanan,
-        "minuman": minuman
-    })
+    def save_orders(self):
+        with open(ORDER_FILE, "w") as file:
+            json.dump(self.orders, file, indent=4)
 
-    save_data("orders.json", orders)
+    def tambah_order(self):
+        meja = input("Nomor Meja: ")
+        menu = input("Nama Menu: ")
+        jumlah = input("Jumlah: ")
 
-    print("\n✅ Order berhasil ditambahkan!")
-    print(f"Nama: {nama}, Makanan: {makanan}, Minuman: {minuman}")
+        self.orders.append({"meja": meja, "menu": menu, "jumlah": jumlah})
+        self.save_orders()
+        print(f"Order {menu} untuk meja {meja} sebanyak {jumlah} telah ditambahkan.")
 
-def lihat_order():
-    orders = load_data("orders.json")
+    def lihat_order(self):
+        if not self.orders:
+            print("Tidak ada order saat ini.")
+        else:
+            print("\n=== DAFTAR ORDER ===")
+            for idx, order in enumerate(self.orders, start=1):
+                print(f"{idx}. Meja {order['meja']} - {order['menu']} x {order['jumlah']}")
 
-    print("\n=== Daftar Order ===")
-    if not orders:
-        print("Tidak ada order.")
-        return
+    def hapus_order(self):
+        self.lihat_order()
+        try:
+            index = int(input("Masukkan nomor order yang ingin dihapus: ")) - 1
+            if 0 <= index < len(self.orders):
+                deleted_order = self.orders.pop(index)
+                self.save_orders()
+                print(f"Order {deleted_order['menu']} di meja {deleted_order['meja']} telah dihapus.")
+            else:
+                print("Nomor order tidak valid.")
+        except ValueError:
+            print("Masukkan angka yang valid.")
 
-    for order in orders:
-        print(f"Nama: {order['nama']}, Makanan: {order['makanan']}, Minuman: {order['minuman']}")
-
-def hapus_order():
-    orders = load_data("orders.json")
-
-    print("\n=== Hapus Order ===")
-    lihat_order()
-    nama = input("Masukkan nama pelanggan yang ordernya ingin dihapus: ")
-
-    new_orders = [o for o in orders if o["nama"] != nama]
-
-    if len(new_orders) < len(orders):
-        save_data("orders.json", new_orders)
-        print("✅ Order berhasil dihapus!")
-    else:
-        print("❌ Order tidak ditemukan.")
+order_manager = OrderManager()
