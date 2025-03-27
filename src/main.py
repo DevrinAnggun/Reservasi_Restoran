@@ -1,20 +1,37 @@
-from menu import Menu
-from reservation import Reservation
-from order import Order
+from src.reservation import tambah_reservasi, lihat_reservasi, hapus_reservasi
+from src.order import tambah_order, lihat_order, hapus_order
 
-menu = Menu()
-reservation_system = Reservation()
-order_system = Order()
+def main():
+    while True:
+        print("\n=== SISTEM RESERVASI RESTORAN ===")
+        print("1. Tambah Reservasi")
+        print("2. Lihat Reservasi")
+        print("3. Hapus Reservasi")
+        print("4. Tambah Order")
+        print("5. Lihat Order")
+        print("6. Hapus Order")
+        print("7. Keluar")
 
-# Menambahkan menu makanan
-menu.add_item("M001", "Nasi Goreng", 25000)
-menu.add_item("M002", "Ayam Bakar", 30000)
-menu.add_item("M003", "Es Teh Manis", 5000)
+        pilihan = input("Pilih menu: ")
 
-# Simulasi reservasi
-print(reservation_system.book_table("Alice", "T1", "19:00"))
-print(reservation_system.confirm_reservation("T1"))
+        if pilihan == "1":
+            tambah_reservasi()
+        elif pilihan == "2":
+            lihat_reservasi()
+        elif pilihan == "3":
+            hapus_reservasi()
+        elif pilihan == "4":
+            lihat_reservasi()  # Memastikan user melihat reservasi sebelum order
+            tambah_order()
+        elif pilihan == "5":
+            lihat_order()
+        elif pilihan == "6":
+            hapus_order()
+        elif pilihan == "7":
+            print("Terima kasih telah menggunakan sistem reservasi restoran!")
+            break
+        else:
+            print("❌ Pilihan tidak valid, silakan coba lagi.")
 
-# Simulasi pemesanan
-print(order_system.place_order("O001", "Alice", ["M001", "M002"]))
-print(order_system.update_order_status("O001", "Diproses"))
+if __name__ == "__main__":
+    main()

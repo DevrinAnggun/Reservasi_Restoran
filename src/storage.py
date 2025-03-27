@@ -1,15 +1,12 @@
 import json
+import os
 
-class Storage:
-    @staticmethod
-    def save_data(filename, data):
-        with open(filename, "w") as file:
-            json.dump(data, file)
-    
-    @staticmethod
-    def load_data(filename):
-        try:
-            with open(filename, "r") as file:
-                return json.load(file)
-        except FileNotFoundError:
-            return {}
+def load_data(filename):
+    if not os.path.exists(filename):
+        return []
+    with open(filename, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+def save_data(filename, data):
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4)
