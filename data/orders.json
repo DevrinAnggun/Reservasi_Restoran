@@ -1,1 +1,26 @@
-[]
+[
+    {
+        "meja": "6",
+        "menu": "Es Jeruk",
+        "jumlah": 8,
+        "total": 56000
+    },
+    {
+        "meja": "6",
+        "menu": "Es Jeruk",
+        "jumlah": 8,
+        "total": 56000
+    },
+    {
+        "meja": "1",
+        "menu": "Paket Ayam Goreng",
+        "jumlah": 1,
+        "total": 20000
+    },
+    {
+        "meja": "1",
+        "menu": "Paket Ayam Goreng",
+        "jumlah": 1,
+        "total": 20000
+    }
+]

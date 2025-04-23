@@ -42,7 +42,12 @@ def tambah_reservasi():
     tanggal_reservasi = datetime.now().strftime("%d-%m-%Y")
     
     data = load_data(RESERVATION_FILE)
-    data.append({"nama": nama, "meja": meja, "tanggal": tanggal_reservasi})
+    data.append({
+        "nama": nama, 
+        "meja": meja, 
+        "tanggal": tanggal_reservasi, 
+        "status_pembayaran": "belum"  # Pastikan status pembayaran terisi
+    })
     save_data(RESERVATION_FILE, data)
     
     print(f"Reservasi untuk {nama} di meja {meja} pada tanggal {tanggal_reservasi} telah ditambahkan.")
@@ -54,30 +59,9 @@ def lihat_reservasi():
     else:
         print("\n=== DAFTAR RESERVASI ===")
         for idx, res in enumerate(data, start=1):
-            print(f"{idx}. {res['nama']} - Meja {res['meja']} - Tanggal {res['tanggal']}")
-
-def hapus_reservasi():
-    data_reservasi = load_data(RESERVATION_FILE)
-    data_order = load_data(ORDER_FILE)
-
-    lihat_reservasi()
-    try:
-        index = int(input("Masukkan nomor reservasi yang ingin dihapus: ")) - 1
-        if 0 <= index < len(data_reservasi):
-            deleted = data_reservasi.pop(index)
-            save_data(RESERVATION_FILE, data_reservasi)
-
-            # Hapus semua order terkait dengan meja yang dihapus
-            nomor_meja = deleted['meja']
-            data_order_baru = [order for order in data_order if order['meja'] != nomor_meja]
-            save_data(ORDER_FILE, data_order_baru)
-
-            print(f"Reservasi {deleted['nama']} di meja {nomor_meja} telah dihapus.")
-            print(f"Semua order untuk meja {nomor_meja} juga telah dihapus.")
-        else:
-            print("Nomor tidak valid.")
-    except ValueError:
-        print("Masukkan angka yang valid.")
+            # Pastikan status_pembayaran ada
+            status = res.get('status_pembayaran', 'belum')
+            print(f"{idx}. {res['nama']} - Meja {res['meja']} - Tanggal {res['tanggal']} - Status: {status}")
 
 def order_menu():
     orders = load_data(ORDER_FILE)
@@ -142,16 +126,48 @@ def cetak_struk_total():
     print("   Terima kasih telah memesan!   ")
     print("=" * 35 + "\n")
 
+    # Menghapus reservasi yang sudah dibayar
+    data_reservasi = load_data(RESERVATION_FILE)
+    data_reservasi_baru = [res for res in data_reservasi if res.get("status_pembayaran", "belum") != "sudah"]
+    save_data(RESERVATION_FILE, data_reservasi_baru)
+
+    print("Semua reservasi yang sudah dibayar telah dihapus.")
+
+def hapus_reservasi():
+    data_reservasi = load_data(RESERVATION_FILE)
+    data_order = load_data(ORDER_FILE)
+
+    lihat_reservasi()
+    try:
+        index = int(input("Masukkan nomor reservasi yang ingin dihapus: ")) - 1
+        if 0 <= index < len(data_reservasi):
+            deleted = data_reservasi.pop(index)
+            save_data(RESERVATION_FILE, data_reservasi)
+
+            # Hapus semua order terkait dengan meja yang dihapus
+            nomor_meja = deleted['meja']
+            data_order_baru = [order for order in data_order if order['meja'] != nomor_meja]
+            save_data(ORDER_FILE, data_order_baru)
+
+            print(f"Reservasi {deleted['nama']} di meja {nomor_meja} telah dihapus.")
+            print(f"Semua order untuk meja {nomor_meja} juga telah dihapus.")
+        else:
+            print("Nomor tidak valid.")
+    except ValueError:
+        print("Masukkan angka yang valid.")
+
 def main():
     while True:
         print("\n=== SISTEM RESERVASI RESTORAN ===")
         print("1. Tambah Reservasi")
         print("2. Lihat Reservasi")
-        print("3. Hapus Reservasi")
-        print("4. Order Menu")
-        print("5. Lihat Semua Order")
-        print("6. Cetak Struk Total Order")
-        print("7. Keluar")
+        print("3. Order Menu")
+        print("4. Lihat Semua Order")
+        print("5. Cetak Struk Total Order")
+
+        # Hanya tampilkan menu "Hapus Reservasi" jika ada reservasi yang status pembayarannya "belum bayar"
+        if any(res.get("status_pembayaran", "belum bayar") == "belum bayar" for res in load_data(RESERVATION_FILE)):
+            print("6. Hapus Reservasi")
 
         pilihan = input("Pilih menu: ")
 
@@ -160,16 +176,13 @@ def main():
         elif pilihan == "2":
             lihat_reservasi()
         elif pilihan == "3":
-            hapus_reservasi()
-        elif pilihan == "4":
             order_menu()
-        elif pilihan == "5":
+        elif pilihan == "4":
             lihat_order()
-        elif pilihan == "6":
+        elif pilihan == "5":
             cetak_struk_total()
-        elif pilihan == "7":
-            print("Terima kasih telah menggunakan sistem ini!")
-            break
+        elif pilihan == "6":
+            hapus_reservasi()
         else:
             print("Pilihan tidak valid.")
 
