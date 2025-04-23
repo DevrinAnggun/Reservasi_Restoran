@@ -1,17 +1,5 @@
 [
     {
-        "meja": "6",
-        "menu": "Es Jeruk",
-        "jumlah": 8,
-        "total": 56000
-    },
-    {
-        "meja": "6",
-        "menu": "Es Jeruk",
-        "jumlah": 8,
-        "total": 56000
-    },
-    {
         "meja": "1",
         "menu": "Paket Ayam Goreng",
         "jumlah": 1,
@@ -19,8 +7,20 @@
     },
     {
         "meja": "1",
-        "menu": "Paket Ayam Goreng",
+        "menu": "Es Teh",
         "jumlah": 1,
-        "total": 20000
+        "total": 5000
+    },
+    {
+        "meja": "4",
+        "menu": "Es Teller",
+        "jumlah": 1,
+        "total": 10000
+    },
+    {
+        "meja": "1",
+        "menu": "Es Jeruk",
+        "jumlah": 1,
+        "total": 7000
     }
 ]

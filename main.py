@@ -42,12 +42,7 @@ def tambah_reservasi():
     tanggal_reservasi = datetime.now().strftime("%d-%m-%Y")
     
     data = load_data(RESERVATION_FILE)
-    data.append({
-        "nama": nama, 
-        "meja": meja, 
-        "tanggal": tanggal_reservasi, 
-        "status_pembayaran": "belum"  # Pastikan status pembayaran terisi
-    })
+    data.append({"nama": nama, "meja": meja, "tanggal": tanggal_reservasi})
     save_data(RESERVATION_FILE, data)
     
     print(f"Reservasi untuk {nama} di meja {meja} pada tanggal {tanggal_reservasi} telah ditambahkan.")
@@ -59,9 +54,7 @@ def lihat_reservasi():
     else:
         print("\n=== DAFTAR RESERVASI ===")
         for idx, res in enumerate(data, start=1):
-            # Pastikan status_pembayaran ada
-            status = res.get('status_pembayaran', 'belum')
-            print(f"{idx}. {res['nama']} - Meja {res['meja']} - Tanggal {res['tanggal']} - Status: {status}")
+            print(f"{idx}. {res['nama']} - Meja {res['meja']} - Tanggal {res['tanggal']}")
 
 def order_menu():
     orders = load_data(ORDER_FILE)
@@ -126,9 +119,9 @@ def cetak_struk_total():
     print("   Terima kasih telah memesan!   ")
     print("=" * 35 + "\n")
 
-    # Menghapus reservasi yang sudah dibayar
+    # Menghapus semua reservasi setelah pembayaran
     data_reservasi = load_data(RESERVATION_FILE)
-    data_reservasi_baru = [res for res in data_reservasi if res.get("status_pembayaran", "belum") != "sudah"]
+    data_reservasi_baru = [res for res in data_reservasi if 'status_pembayaran' in res and res['status_pembayaran'] == "sudah"]
     save_data(RESERVATION_FILE, data_reservasi_baru)
 
     print("Semua reservasi yang sudah dibayar telah dihapus.")
@@ -165,9 +158,13 @@ def main():
         print("4. Lihat Semua Order")
         print("5. Cetak Struk Total Order")
 
-        # Hanya tampilkan menu "Hapus Reservasi" jika ada reservasi yang status pembayarannya "belum bayar"
-        if any(res.get("status_pembayaran", "belum bayar") == "belum bayar" for res in load_data(RESERVATION_FILE)):
+        # Hanya tampilkan menu "Hapus Reservasi" jika ada reservasi yang status pembayarannya "belum"
+        show_hapus_reservasi = any(res.get("status_pembayaran", "belum") == "belum" for res in load_data(RESERVATION_FILE))
+
+        if show_hapus_reservasi:
             print("6. Hapus Reservasi")
+
+        print("7. Keluar" if show_hapus_reservasi else "")
 
         pilihan = input("Pilih menu: ")
 
@@ -181,8 +178,11 @@ def main():
             lihat_order()
         elif pilihan == "5":
             cetak_struk_total()
-        elif pilihan == "6":
+        elif pilihan == "6" and show_hapus_reservasi:
             hapus_reservasi()
+        elif pilihan == "7" and not show_hapus_reservasi:
+            print("Terima kasih telah menggunakan sistem ini!")
+            break
         else:
             print("Pilihan tidak valid.")
 
