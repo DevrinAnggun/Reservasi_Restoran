@@ -23,3 +23,11 @@ Memungkinkan penghapusan reservasi berdasarkan nomor urut di daftar reservasi. K
 - Keluar dari Program
 
 Fitur untuk keluar dari program CLI dengan aman.
+
+# Tools dan Teknologi yang Digunakan
+- Bahasa Pemrograman Python
+- Modul json
+- Modul os
+- Modul datetime
+- Struktur Data List dan Dictionary
+- CLI (Command Line Interface)
